@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Glacier Detection App 🌍❄️</title>
+    <style>
+        body {
+            margin: 0; padding: 0; font-family: Arial, sans-serif; overflow-x: hidden; color: white; position: relative;
+        }
+        body::before {
+            content: "";
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1650&q=80');
+            background-size: cover; background-position: center; z-index: -2;
+        }
+        .overlay {
+            background-color: rgba(0,0,0,0.5); padding: 20px; min-height: 100vh; position: relative; z-index: 1;
+        }
+        h1 { text-align: center; font-size: 3em; margin-bottom: 20px; text-shadow: 2px 2px 8px #000; position: relative; }
+        form { text-align: center; margin-bottom: 30px; }
+        input[type="text"] { width: 50%; padding: 10px; border-radius: 5px; border: none; font-size: 1em; }
+        button { padding: 10px 20px; border-radius: 5px; border: none; background-color: #1e90ff; color: white; font-size: 1em; cursor: pointer; }
+        button:hover { background-color: #0d6efd; }
+        h2, h3 { text-align: center; text-shadow: 1px 1px 5px #000; }
+        iframe { display: block; margin: 20px auto; border: 3px solid white; border-radius: 10px; }
+        img { display: block; margin: 10px auto; border-radius: 10px; border: 2px solid white; }
+
+        /* Snowfall */
+        .snowflake { position: fixed; top: -10px; width: 10px; height: 10px; background: white; border-radius: 50%; opacity: 0.8; pointer-events: none; animation-name: fall; animation-timing-function: linear; animation-iteration-count: infinite; }
+        @keyframes fall { 0% { transform: translateY(0px) translateX(0px); opacity:0.8; } 100% { transform: translateY(100vh) translateX(50px); opacity:0; } }
+
+        /* Floating glacier icons */
+        .glacier-icon { position: absolute; width: 40px; height: 40px; background-image: url('https://upload.wikimedia.org/wikipedia/commons/e/e1/Snowflake_icon.svg'); background-size: contain; background-repeat: no-repeat; cursor: pointer; animation-name: float; animation-timing-function: linear; animation-iteration-count: infinite; }
+        @keyframes float { 0% { transform: translateY(-50px) translateX(0px); opacity:0; } 100% { transform: translateY(600px) translateX(150px); opacity:0; } }
+    </style>
+</head>
+<body>
+    <div class="overlay">
+        <h1>Glacier Detection App 🌍❄️</h1>
+
+        <!-- Floating interactive glacier icons -->
+        <div class="glacier-icon" style="left:10%; animation-duration:12s;" onclick="openGlacier('Gangotri Glacier', 30.995, 79.07)"></div>
+        <div class="glacier-icon" style="left:30%; animation-duration:15s;" onclick="openGlacier('Siachen Glacier', 35.50, 77.00)"></div>
+        <div class="glacier-icon" style="left:50%; animation-duration:18s;" onclick="openGlacier('Yamunotri Glacier', 31.01, 78.45)"></div>
+
+        <form method="POST">
+            <input type="text" name="glacier_names" placeholder="Enter Glacier Names (comma separated)" required>
+            <button type="submit">Detect</button>
+        </form>
+
+        {% if map_file %}
+            <h2>Map:</h2>
+            <iframe src="{{ map_file }}" width="800" height="600"></iframe>
+        {% endif %}
+
+        {% if images %}
+            <h2>Glacier Images:</h2>
+            {% for name, url in images.items() %}
+                <h3>{{ name }}</h3>
+                <img src="{{ url }}" alt="{{ name }}" width="600"><br><br>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- Snowfall -->
+    <script>
+        const numberOfFlakes = 50;
+        for(let i=0;i<numberOfFlakes;i++){
+            const snowflake=document.createElement('div');
+            snowflake.className='snowflake';
+            snowflake.style.left=Math.random()*100+'vw';
+            snowflake.style.width=snowflake.style.height=Math.random()*8+4+'px';
+            snowflake.style.animationDuration=(Math.random()*5+5)+'s';
+            snowflake.style.opacity=Math.random();
+            document.body.appendChild(snowflake);
+        }
+
+        function openGlacier(name, lat, lon){
+            window.open(`/glacier/${name}?lat=${lat}&lon=${lon}`,'_blank');
+        }
+    </script>
+</body>
+</html>
